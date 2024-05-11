@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  siem-server:
+    # The image for the 'siem-server' service will be built using the contents of the dockerfile in the same directory
+    build: .
+    # The command that will be used to start the container. In this case, it is uvicorn to start the fastapi app on port 5000
+    command: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+    # mount the source code in ./app inside the container
+    volumes:
+      - ./app:/app
+    # Map port 5000 in the container to port 5000 on the local machine
+    ports:
+      - "5000:5000"
+    # Forces the db service to start before the this one
+    depends_on:
+      - siem-db
+    # Set environment variables
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/tasks
+      POSTGRES_DB: siem-data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST: siem-db
+      POSTGRES_PORT: 5432
+
+  siem-db:
+    # Using the official postgres image from docker
+    image: postgres:latest
+
+    # Map port 5432 from the container to the local device 
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+
+    # Set postgres environment variables inside the container
+    environment:
+      POSTGRES_DB: siem-data
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    # Mounts postgres data for data persistence
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Every .sql file inside /docker-entrypoint-initdb.d will be run when the postgress container is created
+      - ./DB_init:/docker-entrypoint-initdb.d
+
+volumes:
+  postgres_data:

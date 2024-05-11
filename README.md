@@ -25,5 +25,5 @@ Dark mode:https://www.youtube.com/watch?v=7zqI4qMDdg8&ab_channel=DaveGray
 Geolocation based on IP: https://www.npmjs.com/package/geoip-lite
 
 
-
+Big help for initializing database inside docker container: https://medium.com/@asuarezaceves/initializing-a-postgresql-database-with-a-dataset-using-docker-compose-a-step-by-step-guide-3feebd5b1545
 
